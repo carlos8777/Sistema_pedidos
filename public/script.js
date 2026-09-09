@@ -1,9 +1,10 @@
 let pedidoSeleccionado = null;
 let listaPedido = [];
 
+// Elementos del DOM
 const formPedido = document.getElementById('form-pedido');
 const formTitle = document.getElementById('form-title');
-const inputPedidoId = document.getElementById('pedido-id');
+const inputPedidoId = document.getElementById('pedido-id'); // Nombre de variable unificado
 const btnGuardar = document.getElementById('btn-guardar');
 const btnCancelar = document.getElementById('btn-cancelar');
 
@@ -14,28 +15,29 @@ const btnBorrar = document.getElementById('eliminar');
 const tbodyPedidos = document.getElementById('tbody-pedidos');
 
 const hoy = new Date().toISOString().split('T')[0];
-inputFiltroFecha.value = hoy;
+if (inputFiltroFecha) {
+    inputFiltroFecha.value = hoy;
+}
 
-//Formato para las fechas DD/MM/AAAA
-
-function formatoFecha(fechaISO){
-    if(!fechaISO) return '';
+// Formato de fecha para la tabla (DD/MM/AAAA)
+function formatoFecha(fechaISO) {
+    if (!fechaISO) return '';
     const partes = fechaISO.split('-');
-    if(partes.length !== 3) return fechaISO;
+    if (partes.length !== 3) return fechaISO;
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
-//Boton para buscar
-
+// Buscar pedidos por fecha
 btnBuscar.addEventListener('click', async () => {
     const fecha = inputFiltroFecha.value;
-    if(!fecha){
+    if (!fecha) {
         alert('Seleccione una fecha para consultar.');
         return;
     }
     await cargarPedidos(fecha);
 });
 
+// Cargar pedidos desde el servidor
 async function cargarPedidos(fecha = '') {
     tbodyPedidos.innerHTML = '<tr><td colspan="7" class="text-center">Cargando...</td></tr>';
     deseleccionarPedido();
@@ -43,19 +45,13 @@ async function cargarPedidos(fecha = '') {
     try {
         const url = fecha ? `/api/pedidos?fecha=${fecha}` : '/api/pedidos';
         const res = await fetch(url);
-
-        // Si la respuesta no fue exitosa (código 200/201), obtenemos el mensaje de error del servidor
+        
         if (!res.ok) {
             const err = await res.json();
-            throw new Error(err.error || 'Error al obtener los pedidos.');
+            throw new Error(err.error || 'Error en el servidor al consultar pedidos.');
         }
 
         const pedidos = await res.json();
-
-        if (!Array.isArray(pedidos)) {
-            throw new Error('La respuesta recibida no es un listado válido.');
-        }
-
         listaPedido = pedidos;
         renderTabla(pedidos);
     } catch (error) {
@@ -64,8 +60,9 @@ async function cargarPedidos(fecha = '') {
     }
 }
 
-function renderTabla(pedidos){
-    if(pedidos.length === 0){
+// Renderizar filas de la tabla
+function renderTabla(pedidos) {
+    if (!pedidos || pedidos.length === 0) {
         tbodyPedidos.innerHTML = '<tr><td colspan="7" class="text-center">No hay pedidos agendados para esta fecha.</td></tr>';
         return;
     }
@@ -78,38 +75,39 @@ function renderTabla(pedidos){
         tr.innerHTML = `
             <td><input type="radio" name="select-pedido" value="${p.id}" onclick="marcarSeleccion(${p.id})"></td>
             <td><strong>${formatoFecha(p.fecha)}</strong></td>
-            <td>${p.horario}</td>
-            <td>${p.cliente}</td>
+            <td>${p.horario || ''}</td>
             <td>${p.metros} m³</td>
-            <td>${p.resistencia}</td>
+            <td>${p.cliente}</td>
             <td>${p.direccion}</td>
-            `;
-            tbodyPedidos.appendChild(tr);
+            <td>${p.resistencia}</td>
+        `;
+        tbodyPedidos.appendChild(tr);
     });
 }
 
-//Seleccion de fila
-
+// Seleccionar fila
 window.marcarSeleccion = function(id) {
     pedidoSeleccionado = listaPedido.find(p => p.id === id);
-    btnModificar.disabled = false;
-    btnBorrar.disabled = false;
+    if (btnModificar) btnModificar.disabled = false;
+    if (btnBorrar) btnBorrar.disabled = false;
+};
+
+// Deseleccionar fila (Selector CSS corregido)
+function deseleccionarPedido() {
+    pedidoSeleccionado = null;
+    if (btnModificar) btnModificar.disabled = true;
+    if (btnBorrar) btnBorrar.disabled = true;
+    
+    const radio = document.querySelector('input[name="select-pedido"]:checked');
+    if (radio) radio.checked = false;
 }
 
-function deseleccionarPedido(){
-    pedidoSelecionado = null;
-    btnModificar.disabled = true;
-    btnBorrar.disabled = true;
-    const radio = document.querySelector('input[name="select-pedido": checked]');
-    if(radio) radio.checked = false;
-}
-
-//Crear y editar formulario
-
+// Guardar / Editar pedido
 formPedido.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const id = inputPedidoId.value;
+    const id = inputPedidoId ? inputPedidoId.value : '';
+
     const datos = {
         fecha: document.getElementById('fecha').value,
         horario: document.getElementById('horario').value,
@@ -119,41 +117,40 @@ formPedido.addEventListener('submit', async (e) => {
         direccion: document.getElementById('direccion').value.trim()
     };
 
-    try{
+    try {
         let res;
-        if(id){
+        if (id) {
             res = await fetch(`/api/pedidos/${id}`, {
-                method : 'PUT',
-                headers: {'Content-Type':'application/json'},
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datos)
             });
-        }else{
-            res = await fetch(`/api/pedidos`, {
-                method : 'POST',
-                headers: {'Content-Type':'application/json'},
+        } else {
+            res = await fetch('/api/pedidos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datos)
             });
         }
 
-        if(res.ok){
+        if (res.ok) {
             alert(id ? 'Pedido actualizado con éxito' : 'Pedido registrado con éxito');
             limpiarFormulario();
-            inputFiltroFecha.value = datos.fecha;
+            if (inputFiltroFecha) inputFiltroFecha.value = datos.fecha;
             await cargarPedidos(datos.fecha);
-        }else{
+        } else {
             const err = await res.json();
-            alert(`Error: ${err.error}`);
+            alert(`Error del servidor: ${err.error || 'No se pudo guardar el pedido'}`);
         }
-    }catch(error){
+    } catch (error) {
         console.error('Error al guardar:', error);
-        alert('Ocurrió un error al procesar el pedido.')
+        alert(`Ocurrió un error en el navegador: ${error.message}`);
     }
 });
 
-//Boton de editar
-
+// Botón de editar
 btnModificar.addEventListener('click', () => {
-    if(!pedidoSeleccionado) return;
+    if (!pedidoSeleccionado) return;
 
     inputPedidoId.value = pedidoSeleccionado.id;
     document.getElementById('fecha').value = pedidoSeleccionado.fecha;
@@ -172,38 +169,39 @@ btnModificar.addEventListener('click', () => {
 
 btnCancelar.addEventListener('click', limpiarFormulario);
 
-function limpiarFormulario(){
-    inputPedidoId.value = '';
+function limpiarFormulario() {
+    if (inputPedidoId) inputPedidoId.value = '';
     formPedido.reset();
     formTitle.textContent = 'Nuevo pedido';
-    btnGuardar. textContent = 'Guardar Pedido';
+    btnGuardar.textContent = 'Guardar Pedido';
     btnCancelar.style.display = 'none';
 }
 
-// Boton Borrar Seleccionado
+// Botón Borrar
 btnBorrar.addEventListener('click', async () => {
-  if (!pedidoSeleccionado) return;
+    if (!pedidoSeleccionado) return;
 
-  const confirmacion = confirm(`¿Estás seguro de que deseas eliminar el pedido del cliente "${pedidoSeleccionado.cliente}"?`);
-  if (!confirmacion) return;
+    const confirmacion = confirm(`¿Estás seguro de que deseas eliminar el pedido del cliente "${pedidoSeleccionado.cliente}"?`);
+    if (!confirmacion) return;
 
-  try {
-    const res = await fetch(`/api/pedidos/${pedidoSeleccionado.id}`, {
-      method: 'DELETE'
-    });
+    try {
+        const res = await fetch(`/api/pedidos/${pedidoSeleccionado.id}`, {
+            method: 'DELETE'
+        });
 
-    if (res.ok) {
-      alert('Pedido eliminado correctamente.');
-      const fechaGuardada = inputFiltroFecha.value;
-      await cargarPedidos(fechaGuardada);
-    } else {
-      const err = await res.json();
-      alert(`Error al eliminar: ${err.error}`);
+        if (res.ok) {
+            alert('Pedido eliminado correctamente.');
+            const fechaGuardada = inputFiltroFecha.value;
+            await cargarPedidos(fechaGuardada);
+        } else {
+            const err = await res.json();
+            alert(`Error al eliminar: ${err.error}`);
+        }
+    } catch (error) {
+        console.error('Error al borrar:', error);
+        alert('Ocurrió un error al intentar eliminar el pedido.');
     }
-  } catch (error) {
-    console.error('Error al borrar:', error);
-    alert('Ocurrió un error al intentar eliminar el pedido.');
-  }
 });
 
+// Cargar pedidos al entrar a la página
 cargarPedidos(hoy);
