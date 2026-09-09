@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <tittle>Gestión de pedidos</tittle>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Sistema de Gestión de Pedidos</h1>
+
+            <section class="card">
+                <h2 id="form-title">Nuevo pedido</h2>
+                <form id="form-pedido">
+                    <input type="hidden" id="pedido-id">
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="fecha">Fecha del pedido:</label>
+                            <input type="date" id="fecha" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="horario">Horario:</label>
+                            <input type="time" id="horario" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="metros">Metros:</label>
+                            <input type="number" id="metros" step="any" placeholder="Ej: 15.5" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="cliente">Cliente:</label>
+                            <input type="text" id="cliente" maxlength="100" placeholder="Manuel Zuñiga" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="direccion">Dirección de entrega:</label>
+                            <input type="text" id="direccion" maxlength="120" placeholder="Col. Cespedes Calle Bolivares #122" required>
+                        </div>
+
+                        <div class="input-group full-width">
+                            <label for="resistencia">Resistencia (kg/cm²):</label>
+                            <input type="text" id="resistencia" maxlength="25" placeholder="Ej: 250" required>
+                        </div>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" id="btn-guardar" class="btn btn-primary">Guardar pedido</button>
+                        <button type="button" id="btn-cancelar" class="btn btn-secondary" style="display: none;">Cancelar edición</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Consulta de pedidos</h2>
+                <div class="filter-bar">
+                    <div class="input-group">
+                        <label for="filtro-fecha">Seleccionar fecha:</label>
+                        <input type="date" id="filtro-fecha">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="buscar" class="btn btn-info">Mostrar por fecha</button>
+                        <button id="editar" class="btn btn-warning" disabled>Editar un pedido</button>
+                        <button id="eliminar" class="btn btn-danger" disabled>Eliminar pedido</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="tabla-pedidos">
+                        <thead>
+                            <tr>
+                                <th>Sel.</th>
+                                <th>Fecha</th>
+                                <th>Horarios</th>
+                                <th>Metros</th>
+                                <th>Cliente</th>
+                                <th>Dirección</th>
+                                <th>Resistencia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-pedidos">
+                            <tr>
+                                <td colspan="7" class="text-center">Selecciona una fecha y presiona "Mostrar por fecha"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
