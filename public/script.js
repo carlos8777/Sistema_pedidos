@@ -36,20 +36,31 @@ btnBuscar.addEventListener('click', async () => {
     await cargarPedidos(fecha);
 });
 
-async function cargarPedidos(fecha = ''){
-    tbodyPedidos.innerHTML = '<tr><td colspan="7" class="text-center"Cargando...</td></tr>';
+async function cargarPedidos(fecha = '') {
+    tbodyPedidos.innerHTML = '<tr><td colspan="7" class="text-center">Cargando...</td></tr>';
     deseleccionarPedido();
 
-    try{
+    try {
         const url = fecha ? `/api/pedidos?fecha=${fecha}` : '/api/pedidos';
         const res = await fetch(url);
+
+        // Si la respuesta no fue exitosa (código 200/201), obtenemos el mensaje de error del servidor
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || 'Error al obtener los pedidos.');
+        }
+
         const pedidos = await res.json();
+
+        if (!Array.isArray(pedidos)) {
+            throw new Error('La respuesta recibida no es un listado válido.');
+        }
 
         listaPedido = pedidos;
         renderTabla(pedidos);
-    }catch(error){
+    } catch (error) {
         console.error('Error al cargar pedidos:', error);
-        tbodyPedidos.innerHTML = '<tr><td colspan="7" class="text-center">Error al cargar los datos</td></tr>';
+        tbodyPedidos.innerHTML = `<tr><td colspan="7" class="text-center" style="color: red;">${error.message}</td></tr>`;
     }
 }
 
