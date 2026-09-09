@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { cretaeClient } = require('@supabase/supabase-js');
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -12,7 +12,7 @@ app.use(express.static('public'));
 
 const supabase= createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-app.get('/api/pedidos', async (requestAnimationFrame, res) => {
+app.get('/api/pedidos', async (req, res) => {
     const { fecha } = req.query;
     let query = supabase.from('pedidos').select('*');
 
@@ -32,7 +32,7 @@ app.post('/api/pedidos', async (req, res) => {
     const { fecha, metros, cliente, direccion, resistencia, horario } = req.body;
 
     const { data, error } = await supabase
-        .form('pedidos')
+        .from('pedidos')
         .insert([{ fecha, metros, cliente, direccion, resistencia, horario}])
         .select();
         
@@ -47,7 +47,7 @@ app.put('/api/pedidos/:id', async (req, res) => {
     const { fecha, metros, cliente, direccion, resistencia, horario } = req.body;
 
     const { data, error } = await supabase
-        .form('pedidos')
+        .from('pedidos')
         .update({ fecha, metros, cliente, direccion, resistencia, horario })
         .eq('id', id)
         .select();
@@ -62,7 +62,7 @@ app.delete('/api/pedidos/:id', async (req, res) => {
     const { id } = req.params;
 
     const { error } = await supabase
-    .form('pedidos')
+    .from('pedidos')
     .delete()
     .eq('id', id);
 

@@ -3,7 +3,7 @@ let listaPedido = [];
 
 const formPedido = document.getElementById('form-pedido');
 const formTitle = document.getElementById('form-title');
-const inputPedido = document.getElementById('pedido-id');
+const inputPedidoId = document.getElementById('pedido-id');
 const btnGuardar = document.getElementById('btn-guardar');
 const btnCancelar = document.getElementById('btn-cancelar');
 
@@ -66,7 +66,7 @@ function renderTabla(pedidos){
 
         tr.innerHTML = `
             <td><input type="radio" name="select-pedido" value="${p.id}" onclick="marcarSeleccion(${p.id})"></td>
-            <td><strong>${formatearFechaUI(p.fecha)}</strong></td>
+            <td><strong>${formatoFecha(p.fecha)}</strong></td>
             <td>${p.horario}</td>
             <td>${p.cliente}</td>
             <td>${p.metros} m³</td>
@@ -79,7 +79,7 @@ function renderTabla(pedidos){
 
 //Seleccion de fila
 
-windows.marcarSeleccion = function(id) {
+window.marcarSeleccion = function(id) {
     pedidoSeleccionado = listaPedido.find(p => p.id === id);
     btnModificar.disabled = false;
     btnBorrar.disabled = false;
@@ -117,7 +117,7 @@ formPedido.addEventListener('submit', async (e) => {
                 body: JSON.stringify(datos)
             });
         }else{
-            res = await fetch(`/api/pedidos/${id}`, {
+            res = await fetch(`/api/pedidos`, {
                 method : 'POST',
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify(datos)
@@ -142,7 +142,7 @@ formPedido.addEventListener('submit', async (e) => {
 //Boton de editar
 
 btnModificar.addEventListener('click', () => {
-    if(pedidoSeleccionado) return;
+    if(!pedidoSeleccionado) return;
 
     inputPedidoId.value = pedidoSeleccionado.id;
     document.getElementById('fecha').value = pedidoSeleccionado.fecha;
