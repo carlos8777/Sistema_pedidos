@@ -1,0 +1,360 @@
+```css
+/* =========================================
+   CONFIGURACIÓN GENERAL
+========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #eff6ff;
+    color: #1e293b;
+    min-height: 100vh;
+    padding: 30px 15px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* =========================================
+   ENCABEZADO
+========================================= */
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #0f172a;
+    font-size: 32px;
+}
+
+h2 {
+    color: #1e293b;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+/* =========================================
+   TARJETAS
+========================================= */
+
+.card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+/* =========================================
+   FORMULARIOS
+========================================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-weight: 500;
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.input-group input {
+    width: 80%;
+    padding: 11px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 15px;
+    color: #1e293b;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.input-group input::placeholder {
+    color: #94a3b8;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* =========================================
+   BOTONES
+========================================= */
+
+.form-buttons,
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn {
+    border: none;
+    border-radius: 7px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Botón guardar */
+
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Botón cancelar */
+
+.btn-secondary {
+    background: #64748b;
+    color: #ffffff;
+}
+
+/* Botón buscar */
+
+.btn-info {
+    background: #0891b2;
+    color: #ffffff;
+}
+
+/* Botón editar */
+
+.btn-warning {
+    background: #f59e0b;
+    color: #ffffff;
+}
+
+/* Botón eliminar */
+
+.btn-danger {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+/* =========================================
+   BARRA DE FILTROS
+========================================= */
+
+.filter-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-bar .input-group {
+    min-width: 230px;
+}
+
+.filter-bar .action-buttons {
+    margin-top: 0;
+}
+
+/* =========================================
+   TABLA
+========================================= */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 25px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+    background: #ffffff;
+}
+
+thead {
+    background: #1e293b;
+    color: #ffffff;
+}
+
+th {
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+tbody tr {
+    transition: background-color 0.15s;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Primera columna de selección */
+
+th:first-child,
+td:first-child {
+    text-align: center;
+    width: 55px;
+}
+
+/* Radio button */
+
+input[type="radio"] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+/* =========================================
+   MENSAJES DE LA TABLA
+========================================= */
+
+.text-center {
+    text-align: center;
+    color: #64748b;
+    padding: 25px !important;
+}
+
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 20px 10px;
+    }
+
+    h1 {
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-bar .input-group {
+        min-width: 100%;
+    }
+
+    .filter-bar .action-buttons {
+        width: 100%;
+    }
+
+    .filter-bar .btn {
+        flex: 1;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .form-buttons .btn {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   RESPONSIVE - CELULAR
+========================================= */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 12px 8px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 19px;
+    }
+
+    .card {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .btn {
+        padding: 10px 13px;
+        font-size: 13px;
+    }
+
+    .filter-bar .action-buttons {
+        flex-direction: column;
+    }
+
+    .filter-bar .btn {
+        width: 100%;
+    }
+}
+```
