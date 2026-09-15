@@ -134,7 +134,13 @@ formPedido.addEventListener('submit', async (e) => {
         }
 
         if (res.ok) {
-            alert(id ? 'Pedido actualizado con éxito' : 'Pedido registrado con éxito');
+            Swal.fire({
+                icon: 'success',
+                title: 'Operación exitosa',
+                text: id ? 'Pedido actualizado correctamente' : 'Pedido registrado correctamente',
+                timer: 2000,
+                showConfirmButton: false
+            });
             limpiarFormulario();
             if (inputFiltroFecha) inputFiltroFecha.value = datos.fecha;
             await cargarPedidos(datos.fecha);
@@ -144,7 +150,12 @@ formPedido.addEventListener('submit', async (e) => {
         }
     } catch (error) {
         console.error('Error al guardar:', error);
-        alert(`Ocurrió un error en el navegador: ${error.message}`);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un problema al procesar el pedido.',
+            confirmButtonColor: '#007bff'
+        });
     }
 });
 
@@ -181,25 +192,31 @@ function limpiarFormulario() {
 btnBorrar.addEventListener('click', async () => {
     if (!pedidoSeleccionado) return;
 
-    const confirmacion = confirm(`¿Estás seguro de que deseas eliminar el pedido del cliente "${pedidoSeleccionado.cliente}"?`);
-    if (!confirmacion) return;
+    const result = await Swal.fire({
+        title: '¿Confirmas la eliminación?',
+        text: `Se eliminará el pedido del cliente "${pedidoSeleccionado.cliente}".`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
 
-    try {
-        const res = await fetch(`/api/pedidos/${pedidoSeleccionado.id}`, {
-            method: 'DELETE'
-        });
+    if (result.isConfirmed) {
+        try {
+            const res = await fetch(`/api/pedidos/${pedidoSeleccionado.id}`, { method: 'DELETE' });
 
-        if (res.ok) {
-            alert('Pedido eliminado correctamente.');
-            const fechaGuardada = inputFiltroFecha.value;
-            await cargarPedidos(fechaGuardada);
-        } else {
-            const err = await res.json();
-            alert(`Error al eliminar: ${err.error}`);
+            if (res.ok) {
+                Swal.fire('¡Eliminado!', 'El pedido ha sido eliminado.', 'success');
+                await cargarPedidos(inputFiltroFecha.value);
+            } else {
+                const err = await res.json();
+                Swal.fire('Error', err.error || 'No se pudo eliminar.', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error', 'Ocurrió un error al intentar eliminar el pedido.', 'error');
         }
-    } catch (error) {
-        console.error('Error al borrar:', error);
-        alert('Ocurrió un error al intentar eliminar el pedido.');
     }
 });
 
