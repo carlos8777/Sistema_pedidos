@@ -1,0 +1,84 @@
+.auth-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+ 
+.auth-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+ 
+.auth-card h1 {
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+ 
+.auth-card .input-group {
+    margin-bottom: 16px;
+}
+ 
+.auth-card .input-group input {
+    width: 100%;
+}
+ 
+.auth-btn {
+    width: 100%;
+    margin-top: 10px;
+}
+ 
+.auth-error {
+    color: #dc2626;
+    font-size: 13px;
+    min-height: 18px;
+    margin-top: -6px;
+}
+ 
+.auth-link {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 14px;
+    color: #475569;
+}
+ 
+.auth-link a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+}
+ 
+.auth-link a:hover {
+    text-decoration: underline;
+}
+ 
+/* Barra de sesión en la página principal */
+ 
+.session-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #475569;
+}
+ 
+.session-bar strong {
+    color: #1e293b;
+}
+ 
+.rol-badge {
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}

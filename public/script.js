@@ -1,5 +1,6 @@
 let pedidoSeleccionado = null;
 let listaPedido = [];
+let esAdmin = false;
 
 // Elementos del DOM
 const formPedido = document.getElementById('form-pedido');
@@ -28,23 +29,27 @@ function formatoFecha(fechaISO) {
 }
 
 // Buscar pedidos por fecha
-btnBuscar.addEventListener('click', async () => {
-    const fecha = inputFiltroFecha.value;
-    if (!fecha) {
-        alert('Seleccione una fecha para consultar.');
-        return;
-    }
-    await cargarPedidos(fecha);
-});
+if (btnBuscar){
+    btnBuscar.addEventListener('click', async () => {
+        const fecha = inputFiltroFecha.value;
+        if (!fecha) {
+            alert('Seleccione una fecha para consultar.');
+            return;
+        }
+        await cargarPedidos(fecha);
+    });
+}
 
 // Cargar pedidos desde el servidor
 async function cargarPedidos(fecha = '') {
+    if(!esAdmin) return;
+
     tbodyPedidos.innerHTML = '<tr><td colspan="7" class="text-center">Cargando...</td></tr>';
     deseleccionarPedido();
 
     try {
         const url = fecha ? `/api/pedidos?fecha=${fecha}` : '/api/pedidos';
-        const res = await fetch(url);
+        const res = await fetch(url, { headers: await authHeaders() });
         
         if (!res.ok) {
             const err = await res.json();
@@ -122,16 +127,18 @@ formPedido.addEventListener('submit', async (e) => {
         if (id) {
             res = await fetch(`/api/pedidos/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: await authHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(datos)
             });
         } else {
             res = await fetch('/api/pedidos', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: await authHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(datos)
             });
         }
+
+        if(await manejarRespuestaAuth(res)) return;
 
         if (res.ok) {
             Swal.fire({
@@ -142,8 +149,10 @@ formPedido.addEventListener('submit', async (e) => {
                 showConfirmButton: false
             });
             limpiarFormulario();
-            if (inputFiltroFecha) inputFiltroFecha.value = datos.fecha;
-            await cargarPedidos(datos.fecha);
+            if(esAdmin){
+                if (inputFiltroFecha) inputFiltroFecha.value = datos.fecha;
+                await cargarPedidos(datos.fecha);
+            }
         } else {
             const err = await res.json();
             alert(`Error del servidor: ${err.error || 'No se pudo guardar el pedido'}`);
@@ -160,23 +169,25 @@ formPedido.addEventListener('submit', async (e) => {
 });
 
 // Botón de editar
-btnModificar.addEventListener('click', () => {
-    if (!pedidoSeleccionado) return;
+if(btnModificar){
+    btnModificar.addEventListener('click', () => {
+        if (!pedidoSeleccionado) return;
 
-    inputPedidoId.value = pedidoSeleccionado.id;
-    document.getElementById('fecha').value = pedidoSeleccionado.fecha;
-    document.getElementById('horario').value = pedidoSeleccionado.horario;
-    document.getElementById('cliente').value = pedidoSeleccionado.cliente;
-    document.getElementById('metros').value = pedidoSeleccionado.metros;
-    document.getElementById('resistencia').value = pedidoSeleccionado.resistencia;
-    document.getElementById('direccion').value = pedidoSeleccionado.direccion;
+        inputPedidoId.value = pedidoSeleccionado.id;
+        document.getElementById('fecha').value = pedidoSeleccionado.fecha;
+        document.getElementById('horario').value = pedidoSeleccionado.horario;
+        document.getElementById('cliente').value = pedidoSeleccionado.cliente;
+        document.getElementById('metros').value = pedidoSeleccionado.metros;
+        document.getElementById('resistencia').value = pedidoSeleccionado.resistencia;
+        document.getElementById('direccion').value = pedidoSeleccionado.direccion;
 
-    formTitle.textContent = 'Editando pedido';
-    btnGuardar.textContent = 'Actualizar pedido';
-    btnCancelar.style.display = 'inline-block';
+        formTitle.textContent = 'Editando pedido';
+        btnGuardar.textContent = 'Actualizar pedido';
+        btnCancelar.style.display = 'inline-block';
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
 btnCancelar.addEventListener('click', limpiarFormulario);
 
@@ -189,36 +200,58 @@ function limpiarFormulario() {
 }
 
 // Botón Borrar
-btnBorrar.addEventListener('click', async () => {
-    if (!pedidoSeleccionado) return;
+if(btnBorrar){
+    btnBorrar.addEventListener('click', async () => {
+        if (!pedidoSeleccionado) return;
 
-    const result = await Swal.fire({
-        title: '¿Confirmas la eliminación?',
-        text: `Se eliminará el pedido del cliente "${pedidoSeleccionado.cliente}".`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
+        const result = await Swal.fire({
+            title: '¿Confirmas la eliminación?',
+            text: `Se eliminará el pedido del cliente "${pedidoSeleccionado.cliente}".`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
 
-    if (result.isConfirmed) {
-        try {
-            const res = await fetch(`/api/pedidos/${pedidoSeleccionado.id}`, { method: 'DELETE' });
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`/api/pedidos/${pedidoSeleccionado.id}`, { 
+                    method: 'DELETE',
+                    headers: await authHeaders()
+                });
 
-            if (res.ok) {
-                Swal.fire('¡Eliminado!', 'El pedido ha sido eliminado.', 'success');
-                await cargarPedidos(inputFiltroFecha.value);
-            } else {
-                const err = await res.json();
-                Swal.fire('Error', err.error || 'No se pudo eliminar.', 'error');
+                if(await manejarRespuestaAuth(res)) return;
+
+                if (res.ok) {
+                    Swal.fire('¡Eliminado!', 'El pedido ha sido eliminado.', 'success');
+                    await cargarPedidos(inputFiltroFecha.value);
+                } else {
+                    const err = await res.json();
+                    Swal.fire('Error', err.error || 'No se pudo eliminar.', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'Ocurrió un error al intentar eliminar el pedido.', 'error');
             }
-        } catch (error) {
-            Swal.fire('Error', 'Ocurrió un error al intentar eliminar el pedido.', 'error');
         }
-    }
-});
+    });
+}
 
-// Cargar pedidos al entrar a la página
-cargarPedidos(hoy);
+async function iniciar(){
+    const usuario = await inicializarSesion();
+    if(!usuario) return;
+
+    esAdmin = usuario.rol === 'admin';
+
+    const seccionConsulta = document.getElementById('seccion-consulta');
+    if(!esAdmin && seccionConsulta){
+        seccionConsulta.style.display = 'none';
+    }
+
+    if(esAdmin) {
+        await cargarPedidos();
+    }
+}
+
+iniciar();
