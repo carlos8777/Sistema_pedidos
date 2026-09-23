@@ -28,7 +28,7 @@ app.get('/api/auth/perfil', verificarToken, (req, res) => {
 
 app.get('/api/pedidos', verificarToken, soloAdmin, async (req, res) => {
     const { fecha } = req.query;
-    let query = supabase.from ('pedidos').select('*');
+    let query = supabaseAdmin.from ('pedidos').select('*');
 
     if(fecha){
         query = query.eq('fecha', fecha);
@@ -45,7 +45,7 @@ app.get('/api/pedidos', verificarToken, soloAdmin, async (req, res) => {
 app.post('/api/pedidos', verificarToken, async (req, res) => {
     const { fecha, metros, cliente, direccion, resistencia, horario } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
         .from('pedidos')
         .insert([{ fecha, metros, cliente, direccion, resistencia, horario}])
         .select();
@@ -60,7 +60,7 @@ app.put('/api/pedidos/:id', verificarToken, soloAdmin, async (req, res) => {
     const { id } =req.params;
     const { fecha, metros, cliente, direccion, resistencia, horario } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
         .from('pedidos')
         .update({ fecha, metros, cliente, direccion, resistencia, horario })
         .eq('id', id)
@@ -75,7 +75,7 @@ app.put('/api/pedidos/:id', verificarToken, soloAdmin, async (req, res) => {
 app.delete('/api/pedidos/:id', verificarToken, soloAdmin, async (req, res) => {
     const { id } = req.params;
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
     .from('pedidos')
     .delete()
     .eq('id', id);

@@ -51,6 +51,8 @@ async function cargarPedidos(fecha = '') {
         const url = fecha ? `/api/pedidos?fecha=${fecha}` : '/api/pedidos';
         const res = await fetch(url, { headers: await authHeaders() });
         
+        if (await manejarRespuestaAuth(res)) return;
+
         if (!res.ok) {
             const err = await res.json();
             throw new Error(err.error || 'Error en el servidor al consultar pedidos.');
@@ -250,7 +252,7 @@ async function iniciar(){
     }
 
     if(esAdmin) {
-        await cargarPedidos();
+        await cargarPedidos(hoy);
     }
 }
 

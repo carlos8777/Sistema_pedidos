@@ -20,7 +20,7 @@
         const { error } = await client.auth.signInWithPassword({ email, password });
 
         if(error){
-            mensajeError.textContent = error.message === 'Credenciales incorrectas'
+            mensajeError.textContent = error.message === 'Invalid login credentials'
             ? 'Correo o contraseña incorrecta'
             : error.message;
             return;
