@@ -84,6 +84,26 @@ app.delete('/api/pedidos/:id', verificarToken, soloAdmin, async (req, res) => {
     res.json({ mensaje: 'Pedido eliminado correctamente'});
 });
 
+// Obtener todos los perfiles registrados (SOLO ADMIN)
+app.get('/api/usuarios', verificarToken, soloAdmin, async (req, res) => {
+    const { data, error } = await supabase.from('perfiles').select('*').order('email');
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+});
+
+// Cambiar el rol de un usuario (SOLO ADMIN)
+app.put('/api/usuarios/:id/rol', verificarToken, soloAdmin, async (req, res) => {
+    const { id } = req.params;
+    const { rol } = req.body;
+    
+    if(!['admin', 'usuario'].includes(rol)) return res.status(400).json({ error: 'Rol inválido' });
+
+    const { error } = await supabase.from('perfiles').update({ rol }).eq('id', id);
+    if (error) return res.status(400).json({ error: error.message });
+    
+    res.json({ message: 'Rol actualizado correctamente.' });
+});
+
 app.listen(port, () => {
     console.log(`Servidor activo en el puerto ${port}`)
 })

@@ -8,15 +8,26 @@
         <link rel="stylesheet" href="auth.css">
     </head>
     <body>
-        <div class="container">
+        <div class="app-layout">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Sistema Pedido</h2>
+                </div>
+                <nav class="sidebar-nav">
+                    <button id="nav-pedido" class="nav-btn active">Realizar Pedido</button>
+                    <button id="nav-consulta" class="nav-btn admin-only">Consulta</button>
+                    <button id="nav-config" class="nav-btn admin-only">Configuración</button>
+                </nav>
+            </aside>
+
+        <main class="main-content">
             <div class="session-bar">
                 <span>Hola, <strong id="session-nombre"></strong></span>
                 <span class="rol-badge" id="session-rol"></span>
                 <button id="btn-logout" class="btn btn-secondary">Cerrar sesión</button>
             </div>
-            <h1>Sistema de Gestión de Pedidos</h1>
 
-            <section class="card">
+            <section class="card vista-seccion" id="seccion-pedido">
                 <h2 id="form-title">Nuevo pedido</h2>
                 <form id="form-pedido">
                     <input type="hidden" id="pedido-id">
@@ -59,7 +70,8 @@
                 </form>
             </section>
 
-            <section class="card" id="seccion-consulta">
+            <!-- Consulta -->
+            <section class="card vista-seccion oculto" id="seccion-consulta">
                 <h2>Consulta de pedidos</h2>
                 <div class="filter-bar">
                     <div class="input-group">
@@ -69,8 +81,6 @@
 
                     <div class="action-buttons">
                         <button id="buscar" class="btn btn-info">Mostrar por fecha</button>
-                        <button id="editar" class="btn btn-warning" disabled>Editar un pedido</button>
-                        <button id="eliminar" class="btn btn-danger" disabled>Eliminar pedido</button>
                     </div>
                 </div>
 
@@ -78,7 +88,6 @@
                     <table id="tabla-pedidos">
                         <thead>
                             <tr>
-                                <th>Sel.</th>
                                 <th>Fecha</th>
                                 <th>Horarios</th>
                                 <th>Metros</th>
@@ -87,15 +96,70 @@
                                 <th>Resistencia</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-pedidos">
+                        <tbody id="tbody-pedidos-consulta">
                             <tr>
-                                <td colspan="7" class="text-center">Selecciona una fecha y presiona "Mostrar por fecha"</td>
+                                <td colspan="6" class="text-center">Selecciona una fecha y presiona "Mostrar por fecha"</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </section>
-        </div>
+
+            <section class="card vista-seccion oculto" id="seccion-configuracion">
+                <h2>Panel de Configuración</h2>
+                
+                <div style="margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                    <h3>Gestión de Accesos</h3>
+                    <div class="table-responsive">
+                        <table id="tabla-usuarios">
+                            <thead><tr>
+                                <th>Email</th>
+                                <th>Rol Actual</th>
+                                <th>Acción</th>
+                            </tr></thead>
+                            <tbody id="tbody-usuarios">
+                                <tr><td colspan="3" class="text-center">Cargando usuarios...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div>
+                    <h3>Administración de Pedidos</h3>
+                    <p style="font-size: 14px; color: #64748b; margin-bottom: 15px;">Busca por fecha para modificar o eliminar un registro</p>
+                    <div class="filter-bar">
+                        <div class="input-group">
+                            <label for="filtro-fecha-config">Fecha del pedido:</label>
+                            <input type="date" id="filtro-fecha-config">
+                        </div>
+                        <div class="action-buttons">
+                            <button id="buscar-config" class="btn btn-info">Buscar</button>
+                            <button id="editar" class="btn btn-warning" disabled>Editar pedido</button>
+                            <button id="eliminar" class="btn btn-danger" disabled>Eliminar pedido</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tabla-pedidos-config">
+                            <thead>
+                                <tr>
+                                    <th>Sel.</th>
+                                    <th>Fecha</th>
+                                    <th>Horarios</th>
+                                    <th>Metros</th>
+                                    <th>Cliente</th>
+                                    <th>Dirección</th>
+                                    <th>Resistencia</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-pedidos-config">
+                                <tr><td colspan="7" class="text-center">Buscar una fecha para ver pedidos</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
