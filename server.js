@@ -86,7 +86,11 @@ app.delete('/api/pedidos/:id', verificarToken, soloAdmin, async (req, res) => {
 
 // Obtener todos los perfiles registrados (SOLO ADMIN)
 app.get('/api/usuarios', verificarToken, soloAdmin, async (req, res) => {
-    const { data, error } = await supabase.from('perfiles').select('*').order('email');
+    const { data, error } = await supabaseAdmin
+    .from('perfiles')
+    .select('*')
+    .order('email');
+
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
 });
@@ -98,7 +102,11 @@ app.put('/api/usuarios/:id/rol', verificarToken, soloAdmin, async (req, res) => 
     
     if(!['admin', 'usuario'].includes(rol)) return res.status(400).json({ error: 'Rol inválido' });
 
-    const { error } = await supabase.from('perfiles').update({ rol }).eq('id', id);
+    const { error } = await supabaseAdmin
+    .from('perfiles')
+    .update({ rol })
+    .eq('id', id);
+    
     if (error) return res.status(400).json({ error: error.message });
     
     res.json({ message: 'Rol actualizado correctamente.' });
